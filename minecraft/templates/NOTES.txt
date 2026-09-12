@@ -1,0 +1,16 @@
+Minecraft server "{{ .Release.Name }}" deployed to namespace {{ .Release.Namespace }}.
+
+In-cluster address:
+  {{ include "minecraft.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}
+
+{{- if eq .Values.service.type "NodePort" }}
+
+LAN address (any worker node IP, port {{ .Values.service.nodePort }}):
+  kubectl get nodes -o wide
+
+Forward TCP {{ .Values.service.port }} at the edge firewall to <worker-ip>:{{ .Values.service.nodePort }}
+to reach it from the internet.
+{{- end }}
+
+Console:
+  kubectl -n {{ .Release.Namespace }} exec -it deploy/{{ include "minecraft.fullname" . }} -- rcon-cli

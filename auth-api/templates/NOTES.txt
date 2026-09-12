@@ -1,0 +1,10 @@
+auth-api has been deployed.
+
+Issuer:
+  {{ .Values.config.issuerUrl }}
+
+Discovery document:
+  {{ .Values.config.issuerUrl }}/.well-known/openid-configuration
+
+ML-DSA-65 public key (service-token verification):
+  {{ .Values.config.issuerUrl }}/pq/jwks.json

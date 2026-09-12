@@ -1,0 +1,122 @@
+replicaCount: 2
+revisionHistoryLimit: 0
+
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+
+automountServiceAccountToken: false
+
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: auth-api
+
+image:
+  repository: registry.clusterkeep.dev.net/auth-api
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+
+volumes:
+  - name: tmp
+    emptyDir: {}
+
+volumeMounts:
+  - name: tmp
+    mountPath: /tmp
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations: {}
+  host: auth-dev.clusterkeep.dev.net
+  tls: true
+  tlsSecretName: clusterkeep-tls
+
+config:
+  environment: dev
+  issuerUrl: https://auth-dev.clusterkeep.dev.net
+  cookieDomain: .clusterkeep.dev.net
+  cookieSecure: true
+  redisNamespace: authapi
+  headlampUrl: https://headlamp.clusterkeep.dev.net
+  allowedRedirectHosts: ""
+
+existingSecret: auth-api-secrets
+
+redis:
+  host: redis
+  port: 6379
+  database: 0
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+readinessProbe:
+  httpGet:
+    path: /readyz
+    port: http
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 6
+
+startupProbe:
+  httpGet:
+    path: /healthz
+    port: http
+  periodSeconds: 3
+  failureThreshold: 40
+
+env: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

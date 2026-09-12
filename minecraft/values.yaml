@@ -1,0 +1,110 @@
+replicaCount: 1
+
+strategy:
+  type: Recreate
+
+automountServiceAccountToken: false
+
+image:
+  repository: itzg/minecraft-server
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  fsGroupChangePolicy: OnRootMismatch
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
+
+persistence:
+  enabled: true
+  storageClassName: nfs-csi
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  existingClaim: ""
+
+service:
+  type: NodePort
+  port: 25565
+  nodePort: 30565
+
+minecraft:
+  eula: true
+  type: PAPER
+  version: LATEST
+  memory: 2G
+  difficulty: normal
+  maxPlayers: 20
+  motd: "ClusterKeep"
+  onlineMode: true
+  ops: []
+  whitelist: []
+  enforceWhitelist: false
+  viewDistance: 8
+  simulationDistance: 6
+  overrideServerProperties: true
+  rcon:
+    enabled: true
+    existingSecret: minecraft-rcon
+    passwordKey: password
+
+extraEnv: []
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 2560Mi
+  limits:
+    cpu: "3"
+    memory: 3Gi
+
+readinessProbe:
+  exec:
+    command:
+      - mc-health
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+livenessProbe:
+  exec:
+    command:
+      - mc-health
+  initialDelaySeconds: 120
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 6
+
+startupProbe:
+  exec:
+    command:
+      - mc-health
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  failureThreshold: 60
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
