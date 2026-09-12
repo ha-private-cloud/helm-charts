@@ -1,6 +1,0 @@
-apiVersion: v2
-name: minecraft
-description: A Helm chart for a Paper Minecraft server (itzg/minecraft-server)
-type: application
-version: 0.1.0
-appVersion: "2025.10.1"
