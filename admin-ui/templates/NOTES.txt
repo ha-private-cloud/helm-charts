@@ -1,0 +1,14 @@
+admin-ui has been deployed.
+
+{{- if .Values.ingress.enabled }}
+
+Browse to:
+  {{ if .Values.ingress.tls }}https{{ else }}http{{ end }}://{{ .Values.ingress.host }}
+
+(Add {{ .Values.ingress.host }} to your workstation's /etc/hosts, pointing
+at a worker node IP , ingress-nginx has no in-cluster LoadBalancer/DNS.)
+{{- else }}
+
+Ingress is disabled. Reach the app with:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "admin-ui.fullname" . }} 8080:{{ .Values.service.port }}
+{{- end }}
