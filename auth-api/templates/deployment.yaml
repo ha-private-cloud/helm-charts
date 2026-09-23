@@ -76,12 +76,19 @@ spec:
               value: {{ .Values.config.headlampUrl | quote }}
             - name: AUTH_API_ALLOWED_REDIRECT_HOSTS
               value: {{ .Values.config.allowedRedirectHosts | quote }}
+            - name: AUTH_API_DEFAULT_REDIRECT_URL
+              value: {{ .Values.config.defaultRedirectUrl | quote }}
             {{- with .Values.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
           envFrom:
             - secretRef:
                 name: {{ .Values.existingSecret }}
+            {{- with .Values.clusterIdentitySecret }}
+            - secretRef:
+                name: {{ . }}
+                optional: true
+            {{- end }}
           {{- with .Values.volumeMounts }}
           volumeMounts:
             {{- toYaml . | nindent 12 }}

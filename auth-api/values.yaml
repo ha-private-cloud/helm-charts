@@ -74,8 +74,10 @@ config:
   redisNamespace: authapi
   headlampUrl: https://headlamp.clusterkeep.dev.net
   allowedRedirectHosts: ""
+  defaultRedirectUrl: ""
 
 existingSecret: auth-api-secrets
+clusterIdentitySecret: ""
 
 redis:
   host: redis
