@@ -1,0 +1,4 @@
+storage-api has been deployed.
+
+In-cluster address:
+  http://{{ include "storage-api.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local

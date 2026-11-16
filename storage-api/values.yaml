@@ -1,0 +1,115 @@
+replicaCount: 2
+revisionHistoryLimit: 0
+
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+
+automountServiceAccountToken: false
+
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: storage-api
+
+image:
+  repository: registry.clusterkeep.dev.net/storage-api
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+
+volumes:
+  - name: tmp
+    emptyDir: {}
+
+volumeMounts:
+  - name: tmp
+    mountPath: /tmp
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+config:
+  environment: dev
+  redisNamespace: storageapi
+  authApiInternalUrl: http://auth-api.auth-dev-pub.svc.cluster.local
+  dataDir: /data
+  defaultQuotaBytes: "21474836480"
+
+dataClaimName: ""
+
+existingSecret: storage-api-secrets
+
+redis:
+  host: redis
+  port: 6379
+  database: 0
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 384Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+
+readinessProbe:
+  httpGet:
+    path: /readyz
+    port: http
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 6
+
+startupProbe:
+  httpGet:
+    path: /healthz
+    port: http
+  periodSeconds: 3
+  failureThreshold: 40
+
+env: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
