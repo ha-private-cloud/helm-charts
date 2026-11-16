@@ -49,15 +49,10 @@ securityContext:
 volumes:
   - name: tmp
     emptyDir: {}
-  - name: leaderboard
-    persistentVolumeClaim:
-      claimName: clusterkeep-ui-leaderboard
 
 volumeMounts:
   - name: tmp
     mountPath: /tmp
-  - name: leaderboard
-    mountPath: /data
 
 service:
   type: ClusterIP
