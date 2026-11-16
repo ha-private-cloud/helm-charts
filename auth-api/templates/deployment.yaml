@@ -78,6 +78,10 @@ spec:
               value: {{ .Values.config.allowedRedirectHosts | quote }}
             - name: AUTH_API_DEFAULT_REDIRECT_URL
               value: {{ .Values.config.defaultRedirectUrl | quote }}
+            {{- with .Values.config.loginPageUrl }}
+            - name: AUTH_API_LOGIN_PAGE_URL
+              value: {{ . | quote }}
+            {{- end }}
             {{- with .Values.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

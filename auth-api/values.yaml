@@ -75,6 +75,7 @@ config:
   headlampUrl: https://headlamp.clusterkeep.dev.net
   allowedRedirectHosts: ""
   defaultRedirectUrl: ""
+  loginPageUrl: ""
 
 existingSecret: auth-api-secrets
 clusterIdentitySecret: ""
